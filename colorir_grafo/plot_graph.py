@@ -1,6 +1,8 @@
 import graphviz
+import subprocess
+import os
 
-def plot_colored_graph_from_file(filename, output_filename="graph"):
+def plot_colored_graph_from_file(filename):
     """
     Read a graph structure and node colors from a text file and plot it using Graphviz
     
@@ -25,7 +27,6 @@ def plot_colored_graph_from_file(filename, output_filename="graph"):
     
     for line in lines:
         if "num of nodes:" in line and "num of colors" in line:
-            # Parse the nodes and colors info - format: "num of nodes: 25 num of colors 9"
             parts = line.split()
             # Find the positions of numbers
             for i, part in enumerate(parts):
@@ -44,7 +45,7 @@ def plot_colored_graph_from_file(filename, output_filename="graph"):
     
     # Create color palette
     color_palette = [
-        '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+        '#FF6B6B', "#2BFF00", "#4566D1", "#00FF88", '#FFEAA7',
         '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
         '#F8C471', '#82E0AA', '#F1948A', '#85C1E9', '#D7BDE2',
         '#F9E79F', '#A9DFBF', '#F5B7B1', '#D2B4DE', '#AED6F1'
@@ -101,9 +102,27 @@ def plot_colored_graph_from_file(filename, output_filename="graph"):
             dot.node(node_str, node_str, style='filled', fillcolor=color_palette[color_idx])
     
     # Render the graph to an image file
+    output_filename = str.split(filename,'.')[0] + "_colored"
     dot.render(output_filename, format='png', cleanup=True)
     print(f"Colored graph plot saved as {output_filename}.png")
 
 # Usage
 if __name__ == "__main__":
-    plot_colored_graph_from_file('graph_example.txt', 'colored_graph')
+    filename = None
+    while filename is None:
+        print("Backtrack ou Greedy (b/g):")
+        res = input().strip().lower()
+
+        if res == 'b':
+            # roda o backtrack em Python
+            subprocess.run(["python3", "backtrack.py"])
+            filename = "resultado_backtrack.txt"
+
+        elif res == 'g':
+            # compila e roda o greedy em C++
+            subprocess.run(["g++", "greedy.cpp", "-o", "greedy_exec"])
+            subprocess.run(["./greedy_exec"])
+            filename = "resultado_greedy.txt"
+
+    # depois de rodar, chama o plot
+    plot_colored_graph_from_file(filename)
